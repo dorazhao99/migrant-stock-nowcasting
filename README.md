@@ -24,4 +24,4 @@ Variable Name (X) | Age Group
 9| 60-64
 10| 65+
 
-The ground-truth data comes from the United Nations measuremes of international migrant stock. 
+The ground-truth data comes from the United Nation's measurements of international migrant stock. 
