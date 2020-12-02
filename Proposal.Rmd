@@ -9,6 +9,8 @@ header-includes:
 
 # Problem
 
+Goal is to see if social media data can improve demography.
+
 Estimating international migrant stock, or the number of people living in countries other than those of their birth, is of great importance to demographers and policymakers. To meet these needs, the UN publishes estimates of global international migrant stock biennially. However, there is a great degree of variance between different countries in the quality of, methods they use, and frequency with which they collect the data used to generate these estimates. Simultaneously, social media platforms, in particular Facebook, are ever more ubiquitous, even in parts of the world without high quality migration data. We aim to nowcast current UN migrant stock estimates by training models on a sample of countries and measuring their out-of-sample predictive accuracy to determine: 
 
 \begin{enumerate}
@@ -110,9 +112,11 @@ We will measure the predictive accuracy of our models using mean absolute percen
 There are several limitations to our approach:
 
 \begin{enumerate}
-\item The data we are using as our "ground truth", UN migrant stock estimates, is not actually the "ground truth" of what we are trying to predict but is only an estimate of the "ground truth" itself. Both the facts that the outcome we are predicting is only an estimate of the "ground truth" and that its deviation from the actual "ground truth" highly varies between different countries imposes hard limits to prediction on this problem. Though we attempt to quanity the limits to prediction imposed by different countries having different degrees of deviation from the "ground truth" by comparing predictive accuracy between countries with better and poorer quality data, quantifying the limits to prediction imposed by our outcome of interest only being an estimate of the "ground truth" is beyond the scope of our exercise.
-\item We note that we are predicting 2019 UN migrant stock data using Facebook data from 2020 in this exercise; in effect we are not nowcasting but rather predicting the past. In order to conduct a proper exercise in nowcasting we will have to wait until the 2021 UN migrant stock data is published for and nowcast this data using Facebook data from 2021.
+\item The data we are using as our "ground truth", UN migrant stock estimates, is not actually the "ground truth" of what we are trying to predict but is only an estimate of the "ground truth" itself. Both the facts that the outcome we are predicting is only an estimate of the "ground truth" and that its deviation from the actual "ground truth" highly varies between different countries imposes hard limits to prediction on this problem. Though we attempt to quanity the limits to prediction imposed by different countries having different degrees of deviation from the "ground truth" by comparing predictive accuracy between countries with better and poorer quality data, quantifying the limits to prediction imposed by our outcome of interest only being an estimate of the "ground truth" is beyond the scope of our exercise, but may be the grounds for future published work on this topic.
+\item We note that we are predicting 2019 UN migrant stock data using Facebook data from 2020 in this exercise; in effect we are not nowcasting but rather predicting the past. In order to conduct a proper exercise in nowcasting we will have to wait until the 2021 UN migrant stock data is published for and nowcast this data using Facebook data from 2021. We will preregister and pull facebook data from July 1 2021
 \item We don't have the country of origin of migrants broken down by age and sex and therefore cannot adjust our models for differential age and sex distributions of Facebook use by country of origin.
+\item The way Facebook classifies expats is proprietary.
+\item UN doesn't publish methodology for how migrant stock is estimated when they publish their estimates.
 \end{enumerate}
 
 # Possible extensions
