@@ -1,0 +1,20 @@
+---
+title: "Migrant Stock Model"
+author: "Jordan Klein"
+date: "11/25/2020"
+output: pdf_document
+header-includes: 
+  - \usepackage{mathtools}
+---
+
+## Total number foreign born
+
+$${}_{n} {\mathbf{foreign\_born}}_{x_{S,C}}=\beta_0+\beta_1\frac{{}_{n} {\mathbf{FB\_expats}}_{x_{S,C}}}{{}_{n} {\mathbf{FB\_penetration}}_{x_{S,C}}}+\beta_2{{}_{n}\it{I}_{x}}+\beta_3\it{I}_S+{}_{n}\epsilon_{x_{S,C}}$$
+
+Where ${}_{n} {\mathbf{FB\_penetration}}_{x_{S,C}}=\frac{{}_{n} {\mathbf{FB\_users}}_{x_{S,C}}}{{}_{n} {\mathbf{Total\_pop}}_{x_{S,C}}}$, ${}_{n} Y_{x}$ is the age interval [x,x+n), $S$ is the subscript indicating sex, $C$ is the subscript indicating country, and $\it{I}$ is an indicator variable.
+
+## Percent foreign born
+
+$${}_{n} {\mathbf{\%foreign\_born}}_{x_{S,C}}=\beta_0+\beta_1\frac{{}_{n} {\mathbf{FB\_expats}}_{x_{S,C}}}{{}_{n} {\mathbf{FB\_users}}_{x_{S,C}}}+\beta_2{{}_{n}\it{I}_{x}}+\beta_3\it{I}_S+{}_{n}\epsilon_{x_{S,C}}$$
+
+Where ${}_{n} Y_{x}$ is the age interval [x,x+n), $S$ is the subscript indicating sex, $C$ is the subscript indicating country, and $\it{I}$ is an indicator variable.
