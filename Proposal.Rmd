@@ -1,6 +1,6 @@
 ---
 title: "Migrant Stock Nowcasting Proposal"
-author: "Jordan Klein"
+author: "Jordan Klein, Shreyas Gandlur, Dorothy Zhao"
 date: "12/1/2020"
 output: pdf_document
 header-includes: 
