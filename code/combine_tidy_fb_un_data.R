@@ -31,21 +31,42 @@ FB_UN_totals <- inner_join(UN_totals, Facebook_totals) %>%
 
 write_csv(FB_UN_totals, "FB_UN_totals.csv")
 
-# 
-# 
-# Mapes <- read_csv("model_mapes.csv")
-# 
-# 
-# Mapes <- gather(Mapes, method, mape, rf_mape:linreg_mape) %>% 
-#   filter(method != "adaboost_mape", !(split %in% c("train_high_test_low", "train_low_test_high")), 
-#                                       !(model %in% c("fb_age_sex_normalized", "autoregressive_with_fb_normalized", 
-#                                                      "all_preds")))
-# 
-# 
-# 
-# 
-# 
-# setwd("..")
-# setwd("data")
-# 
-# FB_UN <- read_csv("facebook_un_combined_2020.csv")
+#### Create normalized dataset
+
+Facebook_age_sex <- filter(Facebook, age_sex_group %in% c(unique(Facebook$age_sex_group)
+                                                          [c(15:length(unique(Facebook$age_sex_group)))])) %>% 
+  select(-country) %>% 
+  rename(fb_expats = expat_pop, fb_users = total_pop, 
+         country_code = iso)
+
+UN_age_sex <- filter(UN, !(age_group %in% c("Total", "0-4", "5-9", "10-14")), sex != "both sexes") %>% 
+  select(-total_pop_2019, -data_used) %>% 
+  spread(year, migrant_pop)
+
+UN_age_sex <- filter(UN, year == 2019) %>% 
+  select(country_code, country_name, data_used) %>% 
+  unique() %>%
+  full_join(UN_age_sex) %>% 
+  rename(total_pop = total_pop_2020, migrant_pop_2015 = "2015", 
+         migrant_pop_2017 = "2017", migrant_pop_2019 = "2019")
+
+UN_age_sex <- filter(UN_age_sex, age_group %in% c("65-69", "70-74", "75+")) %>% 
+  group_by(country_code, country_name, data_used, sex, un_development_lvl, oecd_member) %>% 
+  summarise(total_pop = sum(total_pop), migrant_pop_2015 = sum(migrant_pop_2015), 
+            migrant_pop_2017 = sum(migrant_pop_2017), migrant_pop_2019 = sum(migrant_pop_2019)) %>% 
+  add_column(age_group = "65+", .before = "sex") %>% 
+  bind_rows(UN_age_sex) %>% 
+  filter(!(age_group %in% c("65-69", "70-74", "75+")))
+
+UN_age_sex <- unite(UN_age_sex, "age_sex_group", sex:age_group) %>% 
+  mutate(age_sex_group = as.factor(age_sex_group))
+
+levels(UN_age_sex$age_sex_group) <- unique(Facebook_age_sex$age_sex_group)[c(12:22, 1:11)]
+  
+#### Join data
+
+FB_UN_age_sex <- inner_join(UN_age_sex, Facebook_age_sex) %>% 
+  .[, c(1:3, 5:6, 4, 7:12)] %>% 
+  mutate(fb_penetration = fb_users/total_pop)
+
+write_csv(FB_UN_age_sex, "FB_UN_age_sex.csv")
