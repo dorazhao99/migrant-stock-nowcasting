@@ -1,0 +1,6 @@
+pandas==1.1.2
+numpy==1.19.1
+scikit-learn==0.23.2
+pip==20.2.2
+facebook-business==9.0.0
+xgboost==1.2.1 
