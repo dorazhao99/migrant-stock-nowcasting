@@ -2,7 +2,7 @@
 
 ### Setup
 
-setwd("..")
+setwd("data")
 library(tidyverse)
 
 Facebook <- read_csv("Facebook_tidy.csv")
@@ -15,8 +15,10 @@ Facebook_totals <- filter(Facebook, age_sex_group == "total") %>%
   rename(fb_expats = expat_pop, fb_users = total_pop, 
          country_code = iso)
 
-UN_totals <- filter(UN, age_group == "Total", sex == "both sexes") %>% 
-  select(-age_group, -sex, -total_pop_2019, -data_used) %>% 
+UN_totals <- filter(UN, !(age_group %in% c("Total", "0-4", "5-9", "10-14")), sex == "both sexes") %>% 
+  select(-sex, -total_pop_2019, -data_used) %>% 
+  group_by(country_name, year) %>% 
+  summarise(migrant_pop = sum(migrant_pop), total_pop_2020 = sum(total_pop_2020)) %>% 
   spread(year, migrant_pop)
 
 UN_totals <- filter(UN, year == 2019) %>% 
@@ -70,3 +72,13 @@ FB_UN_age_sex <- inner_join(UN_age_sex, Facebook_age_sex) %>%
   mutate(fb_penetration = fb_users/total_pop)
 
 write_csv(FB_UN_age_sex, "FB_UN_age_sex.csv")
+
+group_by(FB_UN_age_sex, country_code, country_name) %>% 
+  summarise(total_pop = sum(total_pop), migrant_pop_2015 = sum(migrant_pop_2015), 
+            migrant_pop_2017 = sum(migrant_pop_2017), migrant_pop_2019 = sum(migrant_pop_2019)) -> test
+
+table(test$total_pop == FB_UN_totals$total_pop)
+table(test$migrant_pop_2015 == FB_UN_totals$migrant_pop_2015)
+table(test$migrant_pop_2017 == FB_UN_totals$migrant_pop_2017)
+table(test$migrant_pop_2019 == FB_UN_totals$migrant_pop_2019)
+
