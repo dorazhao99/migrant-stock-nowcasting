@@ -9,16 +9,34 @@ library(tidyverse)
 
 Mapes <- read_csv("model_mapes.csv")
 
-Mapes <- gather(Mapes, method, mape, rf_mape:linreg_mape)
+Mapes <- gather(Mapes, method, mape, rf_mape:linreg_mape) %>% 
+  unique() %>% 
+  filter(!grepl("subgroups$", model))
 
-Mapes_subgroups <- filter(Mapes, model %in% c("autoregression_subgroups_added", 
-                                               "fb_normalized_subgroups_added", 
-                                               "autoregressive_with_fb_normalized_subgroups_added")) %>% 
-  mutate(model = factor(model, levels = c("autoregression_subgroups_added",
+Mapes_total <- filter(Mapes, model %in% c("autoregressive_baseline", 
+                                          "fb_naive", 
+                                          "autoregressive_plus_fb")) %>% 
+  mutate(model = factor(model, levels = c("autoregressive_baseline",
+                                          "fb_naive", 
+                                          "autoregressive_plus_fb"), 
+                        labels = c("Baseline", "Facebook", "Combined")))
+
+Mapes_subgroups <- filter(Mapes, model %in% c("autoregressive_subgroups_added", 
+                                              "fb_normalized_subgroups_added", 
+                                              "autoregressive_with_fb_normalized_subgroups_added")) %>% 
+  mutate(model = factor(model, levels = c("autoregressive_subgroups_added",
                                           "fb_normalized_subgroups_added", 
                                           "autoregressive_with_fb_normalized_subgroups_added"), 
                         labels = c("Baseline", "Facebook", "Combined")))
 
+Mapes <- mutate(Mapes, model_data = factor(case_when(model %in% c("autoregressive_baseline", "autoregressive_subgroups_added") ~ "Baseline", 
+                                              model %in% c("fb_naive", "fb_normalized_subgroups_added") ~ "Facebook", 
+                                              model %in% c("autoregressive_plus_fb", "autoregressive_with_fb_normalized_subgroups_added") ~ "Combined"), 
+                                    levels = c("Baseline", "Facebook", "Combined")), 
+                model_age_sex_adj = case_when(model %in% c("autoregressive_baseline", "fb_naive", "autoregressive_plus_fb") ~ "Not adjusted", 
+                                              model %in% c("autoregressive_subgroups_added", "fb_normalized_subgroups_added", 
+                                                           "autoregressive_with_fb_normalized_subgroups_added") ~ "Adjusted")) %>% 
+     unite("split_adj", model_age_sex_adj, split, remove = F)
 
 # Mapes_og <- Mapes[-c(grep("subgroup", Mapes$model), 
 #                      grep("data_used", Mapes$model)), ] %>% 
@@ -36,15 +54,45 @@ Mapes_subgroups <- filter(Mapes, model %in% c("autoregression_subgroups_added",
 #   bind_rows(Mapes_og) %>% 
 #   unite("split_adj", model_age_sex_adj, split, remove = F)
 
-#### Graphing
+#### Graphing all
 
-filter(Mapes_subgroups, method == "linreg_mape") %>% 
+filter(Mapes, method == "linreg_mape") %>% 
+  ggplot(aes(y = mape, x = model_data, color = split, shape = model_age_sex_adj)) + 
+  geom_line(aes(group = split_adj, linetype = model_age_sex_adj)) + 
+  geom_point(size = 2) + 
+  xlab("Model") + ylab("MAPE") + 
+  scale_shape_discrete(name = "Age-sex adjusted") + scale_linetype_discrete(name = "Age-sex adjusted") + 
+  scale_color_discrete(name = "Countries", labels = c("All", "Developed regions", "Less developed regions")) + 
+  scale_y_continuous(breaks = seq(0, 350, 50), limits = c(0, 375))
+  
+filter(Mapes, method == "rf_mape") %>% 
+  ggplot(aes(y = mape, x = model_data, color = split, shape = model_age_sex_adj)) + 
+  geom_line(aes(group = split_adj, linetype = model_age_sex_adj)) + 
+  geom_point() + 
+  xlab("Model") + ylab("MAPE") + 
+  scale_shape_discrete(name = "Age-sex adjusted") + scale_linetype_discrete(name = "Age-sex adjusted") + 
+  scale_color_discrete(name = "Countries", labels = c("All", "Developed regions", "Less developed regions")) + 
+  scale_y_continuous(breaks = seq(0, 350, 50), limits = c(0, 375))
+
+filter(Mapes, method == "xgboost_mape") %>% 
+  ggplot(aes(y = mape, x = model_data, color = split, shape = model_age_sex_adj)) + 
+  geom_line(aes(group = split_adj, linetype = model_age_sex_adj)) + 
+  geom_point() + 
+  xlab("Model") + ylab("MAPE") + 
+  scale_shape_discrete(name = "Age-sex adjusted") + scale_linetype_discrete(name = "Age-sex adjusted") + 
+  scale_color_discrete(name = "Countries", labels = c("All", "Developed regions", "Less developed regions")) + 
+  scale_y_continuous(breaks = seq(0, 350, 50), limits = c(0, 375))
+
+#### Graphing total
+
+filter(Mapes_total, method == "linreg_mape") %>% 
   ggplot(aes(y = mape, x = model, shape = split, color = split)) + 
   geom_line(aes(group = split)) + 
   geom_point() + 
   xlab("Model") + ylab("MAPE") + 
   scale_color_discrete(name = "Countries", labels = c("All", "Developed regions", "Less developed regions")) + 
-  scale_shape_discrete(name = "Countries", labels = c("All", "Developed regions", "Less developed regions"))
+  scale_shape_discrete(name = "Countries", labels = c("All", "Developed regions", "Less developed regions")) + 
+  scale_y_continuous(breaks = seq(0, 350, 50), limits = c(0, 375))
 
 filter(Mapes_subgroups, method == "rf_mape") %>% 
   ggplot(aes(y = mape, x = model, shape = split, color = split)) + 
@@ -52,7 +100,8 @@ filter(Mapes_subgroups, method == "rf_mape") %>%
   geom_point() + 
   xlab("Model") + ylab("MAPE") + 
   scale_color_discrete(name = "Countries", labels = c("All", "Developed regions", "Less developed regions")) + 
-  scale_shape_discrete(name = "Countries", labels = c("All", "Developed regions", "Less developed regions"))
+  scale_shape_discrete(name = "Countries", labels = c("All", "Developed regions", "Less developed regions")) + 
+  scale_y_continuous(breaks = seq(0, 350, 50), limits = c(0, 375))
 
 filter(Mapes_subgroups, method == "xgboost_mape") %>% 
   ggplot(aes(y = mape, x = model, shape = split, color = split)) + 
@@ -60,7 +109,37 @@ filter(Mapes_subgroups, method == "xgboost_mape") %>%
   geom_point() + 
   xlab("Model") + ylab("MAPE") + 
   scale_color_discrete(name = "Countries", labels = c("All", "Developed regions", "Less developed regions")) + 
-  scale_shape_discrete(name = "Countries", labels = c("All", "Developed regions", "Less developed regions"))
+  scale_shape_discrete(name = "Countries", labels = c("All", "Developed regions", "Less developed regions")) + 
+  scale_y_continuous(breaks = seq(0, 350, 50), limits = c(0, 375))
+
+#### Graphing subgroups
+
+filter(Mapes_subgroups, method == "linreg_mape") %>% 
+  ggplot(aes(y = mape, x = model, shape = split, color = split)) + 
+  geom_line(aes(group = split)) + 
+  geom_point() + 
+  xlab("Model") + ylab("MAPE") + 
+  scale_color_discrete(name = "Countries", labels = c("All", "Developed regions", "Less developed regions")) + 
+  scale_shape_discrete(name = "Countries", labels = c("All", "Developed regions", "Less developed regions")) + 
+  scale_y_continuous(breaks = seq(0, 350, 50), limits = c(0, 375))
+
+filter(Mapes_subgroups, method == "rf_mape") %>% 
+  ggplot(aes(y = mape, x = model, shape = split, color = split)) + 
+  geom_line(aes(group = split)) + 
+  geom_point() + 
+  xlab("Model") + ylab("MAPE") + 
+  scale_color_discrete(name = "Countries", labels = c("All", "Developed regions", "Less developed regions")) + 
+  scale_shape_discrete(name = "Countries", labels = c("All", "Developed regions", "Less developed regions")) + 
+  scale_y_continuous(breaks = seq(0, 350, 50), limits = c(0, 375))
+
+filter(Mapes_subgroups, method == "xgboost_mape") %>% 
+  ggplot(aes(y = mape, x = model, shape = split, color = split)) + 
+  geom_line(aes(group = split)) + 
+  geom_point() + 
+  xlab("Model") + ylab("MAPE") + 
+  scale_color_discrete(name = "Countries", labels = c("All", "Developed regions", "Less developed regions")) + 
+  scale_shape_discrete(name = "Countries", labels = c("All", "Developed regions", "Less developed regions")) + 
+  scale_y_continuous(breaks = seq(0, 350, 50), limits = c(0, 375))
 
 # 
 # 

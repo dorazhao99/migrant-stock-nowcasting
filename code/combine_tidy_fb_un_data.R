@@ -82,3 +82,7 @@ table(test$migrant_pop_2015 == FB_UN_totals$migrant_pop_2015)
 table(test$migrant_pop_2017 == FB_UN_totals$migrant_pop_2017)
 table(test$migrant_pop_2019 == FB_UN_totals$migrant_pop_2019)
 
+FB_UN <- read_csv("data/FB_UN_age_sex.csv")
+
+lm(log(migrant_pop_2019)~log(fb_users/fb_penetration)+age_sex_group, data = FB_UN) %>% 
+  summary()
