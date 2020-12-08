@@ -22,7 +22,7 @@ UN_totals <- filter(UN, !(age_group %in% c("Total", "0-4", "5-9", "10-14")), sex
   spread(year, migrant_pop)
 
 UN_totals <- filter(UN, year == 2019) %>% 
-  select(country_code, country_name, data_used) %>% 
+  select(country_code, country_name, data_used, un_development_lvl) %>% 
   unique() %>%
   full_join(UN_totals) %>% 
   rename(total_pop = total_pop_2020, migrant_pop_2015 = "2015", 
