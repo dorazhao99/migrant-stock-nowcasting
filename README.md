@@ -1,5 +1,14 @@
 # International Migrant Stock Nowcasting
 
+## Requirements
+* Python 3
+* R
+* Pip
+
+## Requirements
+To download the Python packages needed to run the codem run:
+`pip install -r requirements.txt`
+
 ## Data
 The training data was pulled using the Facebook Marketing API. For each country, we collect the following information:
 * `total_expat`: The total number of expats in a country
@@ -25,3 +34,6 @@ Variable Name (X) | Age Group
 10| 65+
 
 The ground-truth data comes from the United Nation's measurements of international migrant stock. 
+
+## Code
+
