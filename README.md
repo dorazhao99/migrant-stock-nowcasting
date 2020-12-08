@@ -1,7 +1,7 @@
 # International Migrant Stock Nowcasting
 
 ## Requirements
-* Python 3
+* Python 3.8.5
 * R
 * Pip
 
