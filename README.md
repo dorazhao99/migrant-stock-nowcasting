@@ -6,8 +6,11 @@
 * Pip
 
 ## Requirements
-To download the Python packages needed to run the codem run:
+To download the Python packages needed, run:
 `pip install -r requirements.txt`
+
+To run XGBoost on Mac OSX, you may be required to download OpenMP runtime. You can download this using Homebrew with the following command:
+`brew install libomp`
 
 ## Data
 The training data was pulled using the Facebook Marketing API. For each country, we collect the following information:
