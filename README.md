@@ -1,7 +1,7 @@
 # International Migrant Stock Nowcasting
 
 ## Requirements
-* Python 3
+* Python 3.8.5
 * R
 * Pip
 
@@ -36,7 +36,13 @@ Variable Name (X) | Age Group
 9| 60-64
 10| 65+
 
+The data pulled from Facebook can be found in `data/facebookData.csv`. 
+
 The ground-truth data comes from the United Nation's measurements of international migrant stock. 
 
+Our cleaned and combined data from the UN and Facebook can be found in `data/FB_UN_totals.csv`, which include the total migrant populations estimates, and `data/FB_UN_age_sex.csv`, which includes the age-sex subgroups. 
+
 ## Code
+* `code/Migrant Predictions.ipynb` contains our three different regression techniques (linear ression, random forest, and XGBoost) and six different proposed models across three data splits. The raw results are found in `model_mapes.csv`
+* The R code in the folder generates the figures found in the `figs` folder. 
 
